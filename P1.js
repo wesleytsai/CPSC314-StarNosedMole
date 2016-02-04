@@ -81,34 +81,37 @@ torsoGeometry.applyMatrix(non_uniform_scale);
 // Note: The torso has been done for you (but feel free to modify it!)  
 // Hint: Explicity declare new matrices using Matrix4().set     
 
+function scale(x, y, z) {
+    return new THREE.Matrix4().set(x,0,0,0, 0,y,0,0, 0,0,z,0, 0,0,0,1);
+}
+
 var headGeometry = makeCube();
-var head_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var head_scale = scale(3,3,4);
 headGeometry.applyMatrix(head_scale);
 
 var noseGeometry = makeCube();
-var nose_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var nose_scale = scale(3,2,1);
 noseGeometry.applyMatrix(nose_scale);
 
 var lgTentGeometry = makeCube();
-var lgTent_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var lgTent_scale = scale(1,1,3);
 lgTentGeometry.applyMatrix(lgTent_scale);
 
 var smTentGeometry = makeCube();
-var smTent_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var smTent_scale = scale(1,1,2);
 smTentGeometry.applyMatrix(smTent_scale);
 
 var pawGeometry = makeCube();
-var paw_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var paw_scale = scale(3,1,4);
 pawGeometry.applyMatrix(paw_scale);
 
 var clawGeometry = makeCube();
-var claw_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var claw_scale = scale(1,1.5,1.5);
 clawGeometry.applyMatrix(claw_scale);
 
 var tailGeometry = makeCube();
-var tail_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var tail_scale = scale(1,1,5);
 tailGeometry.applyMatrix(tail_scale);
-
 
 // MATRICES
 var torsoMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,2.5, 0,0,1,0, 0,0,0,1);
@@ -116,12 +119,21 @@ var torsoMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,2.5, 0,0,1,0, 0,0,0,1);
 // TO-DO: INITIALIZE THE REST OF YOUR MATRICES 
 // Note: Use of parent attribute is not allowed.
 // Hint: Keep hierarchies in mind!   
-// Hint: Play around with the headTorsoMatrix values, what changes in the render? Why?         
+// Hint: Play around with the TorsoMatrix values, what changes in the render? Why?         
 
-var headMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-var noseMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-var tailMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-var pawMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+function translation(x, y, z) {
+    return new THREE.Matrix4().set(1,0,0,x, 0,1,0,y, 0,0,1,z, 0,0,0,1);
+}
+var headMatrix = translation(0, 2.5, 5);
+var noseMatrix = translation(0, 2, 7);
+var tailMatrix = translation(0, 2.5, -6);
+
+// Paws stored in order: RF, LF, RR, LR
+var pawMatricies = []; 
+pawMatricies[0] = translation(-2, 0, 3.5);
+pawMatricies[1] = translation(2, 0, 3.5);
+pawMatricies[2] = translation(-2, 0, -1.5);
+pawMatricies[3] = translation(2, 0, -1.5);
 
 // Need 9 large tentacles on each side
 var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
@@ -161,6 +173,12 @@ scene.add(smTent);
 var tail = new THREE.Mesh(tailGeometry,normalMaterial);
 tail.setMatrix(tailMatrix)
 scene.add(tail);
+
+for (var i = 0; i < 4; i++) {
+    var paw = new THREE.Mesh(pawGeometry,normalMaterial);
+    paw.setMatrix(pawMatricies[i]);
+    scene.add(paw);
+}
 
 
 // APPLY DIFFERENT JUMP CUTS/ANIMATIONS TO DIFFERNET KEYS
@@ -281,7 +299,7 @@ function updateBody() {
           torso.setMatrix(torsoRotMatrix); 
           break
 
-      // S is swim
+      // S is Swim
       case (key == "N" && animate):
           var time = clock.getElapsedTime(); 
 
