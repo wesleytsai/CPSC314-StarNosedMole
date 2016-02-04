@@ -94,7 +94,7 @@ var nose_scale = scale(3,2,1);
 noseGeometry.applyMatrix(nose_scale);
 
 var lgTentGeometry = makeCube();
-var lgTent_scale = scale(0.3,0.3,2);
+var lgTent_scale = scale(0.2,0.2,1.5);
 lgTentGeometry.applyMatrix(lgTent_scale);
 
 var smTentGeometry = makeCube();
@@ -106,11 +106,11 @@ var paw_scale = scale(3,1,4);
 pawGeometry.applyMatrix(paw_scale);
 
 var clawGeometry = makeCube();
-var claw_scale = scale(1,1.5,1.5);
+var claw_scale = scale(0.3, 0.5, 1);
 clawGeometry.applyMatrix(claw_scale);
 
 var tailGeometry = makeCube();
-var tail_scale = scale(1,1,5);
+var tail_scale = scale(1,1,3);
 tailGeometry.applyMatrix(tail_scale);
 
 // MATRICES
@@ -139,24 +139,50 @@ function multiply(m1, m2) {
     return new THREE.Matrix4().multiplyMatrices(m1, m2);
 }
 
+var matrixStack = [];
+function pushMatrix(m) {
+    var m2 = new Matrix4(m);
+    matrixStack.push(m2);
+}
+
+function popMatrix(m) {
+    return matrixStack.pop();
+}
+
 var headMatrix = translation(0, 2.5, 5);
 var noseMatrix = translation(0, 2, 7);
-var tailMatrix = translation(0, 2.5, -6);
+var tailMatrix = translation(0, 2.5, -5);
 
 // Paws stored in order: RF, LF, RR, LR
-var pawMatricies = []; 
-pawMatricies[0] = multiply(translation(-2, 0, 3.5), rotation(0.1, 0, 0));
-pawMatricies[1] = multiply(translation(2, 0, 3.5), rotation(0.1, 0, 0));
-pawMatricies[2] = multiply(translation(-2, 0, -1.5), rotation(0.1, 0, 0));
-pawMatricies[3] = multiply(translation(2, 0, -1.5), rotation(0.1, 0, 0));
+var pawMatrices = []; 
+pawMatrices[0] = multiply(translation(-2, 0, 3.5), rotation(0.1, 0, 0));
+pawMatrices[1] = multiply(translation(2, 0, 3.5), rotation(0.1, 0, 0));
+pawMatrices[2] = multiply(translation(-2, 0, -1.8), rotation(0.1, 0, 0));
+pawMatrices[3] = multiply(translation(2, 0, -1.8), rotation(0.1, 0, 0));
+
+// Need 5 claws per paw
+var clawMatrices = [];
+for (var i = 0; i < 5; i++) {
+    clawMatrices[i] = translation(-1.5 + 0.75*i, -0.2, 2);
+}
 
 // Need 9 large tentacles on each side
-var lgTentLeftMatricies = []; 
-var lgTentRightMatricies = []; 
+var lgTentLeftMatrices = []; 
+var lgTentRightMatrices = []; 
 
 for (var i = 0; i < 9; i++) {
-    lgTentLeftMatricies[i] = translation(-1, 2.5 - i*0.2, 8); 
-    lgTentRightMatricies[i] = translation(1, 2.5 - i*0.2, 8); 
+    // Rotate
+    lgTentRightMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, -1, 0.1)); 
+
+    // Separate the tentacles
+    lgTentRightMatrices[i] = multiply(lgTentRightMatrices[i],translation(-0.5, i*0.02, 1)); 
+
+    // Rotate
+    lgTentLeftMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, 1, -0.1)); 
+
+    // Separate the tentacles
+    lgTentLeftMatrices[i] = multiply(lgTentLeftMatrices[i],translation(0.5, i*0.02, 1)); 
+
 }
 
 var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
@@ -164,8 +190,6 @@ var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 // Need 2 small tentacles on each side
 var smTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
-// Need 5 claws per paw
-var clawMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
 
 // CREATE BODY
@@ -183,17 +207,17 @@ scene.add(head);
 
 var nose = new THREE.Mesh(noseGeometry,normalMaterial);
 nose.setMatrix(noseMatrix);
-scene.add(nose);
 
 for (var i = 0; i < 9; i++) {
     var lgTentRight = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentRight.setMatrix(lgTentRightMatricies[i]);
-    scene.add(lgTentRight);
+    lgTentRight.setMatrix(lgTentRightMatrices[i]);
+    nose.add(lgTentRight);
 
     var lgTentLeft = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentLeft.setMatrix(lgTentLeftMatricies[i]);
-    scene.add(lgTentLeft);
+    lgTentLeft.setMatrix(lgTentLeftMatrices[i]);
+    nose.add(lgTentLeft);
 }
+scene.add(nose);
 
 var smTent = new THREE.Mesh(smTentGeometry,normalMaterial);
 smTent.setMatrix(smTentMatrix);
@@ -203,11 +227,21 @@ var tail = new THREE.Mesh(tailGeometry,normalMaterial);
 tail.setMatrix(tailMatrix);
 scene.add(tail);
 
+
 for (var i = 0; i < 4; i++) {
+
     var paw = new THREE.Mesh(pawGeometry,normalMaterial);
-    paw.setMatrix(pawMatricies[i]);
+    paw.setMatrix(pawMatrices[i]);
+
+    for (var j = 0; j < 5; j++) {
+        claw = new THREE.Mesh(clawGeometry,normalMaterial);
+        claw.setMatrix(clawMatrices[j]);
+        paw.add(claw);
+    }
+
     scene.add(paw);
 }
+
 
 
 // APPLY DIFFERENT JUMP CUTS/ANIMATIONS TO DIFFERNET KEYS
