@@ -81,6 +81,33 @@ torsoGeometry.applyMatrix(non_uniform_scale);
 // Note: The torso has been done for you (but feel free to modify it!)  
 // Hint: Explicity declare new matrices using Matrix4().set     
 
+var headGeometry = makeCube();
+var head_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+headGeometry.applyMatrix(head_scale);
+
+var noseGeometry = makeCube();
+var nose_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+noseGeometry.applyMatrix(nose_scale);
+
+var lgTentGeometry = makeCube();
+var lgTent_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+lgTentGeometry.applyMatrix(lgTent_scale);
+
+var smTentGeometry = makeCube();
+var smTent_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+smTentGeometry.applyMatrix(smTent_scale);
+
+var pawGeometry = makeCube();
+var paw_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+pawGeometry.applyMatrix(paw_scale);
+
+var clawGeometry = makeCube();
+var claw_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+clawGeometry.applyMatrix(claw_scale);
+
+var tailGeometry = makeCube();
+var tail_scale = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+tailGeometry.applyMatrix(tail_scale);
 
 
 // MATRICES
@@ -91,6 +118,19 @@ var torsoMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,2.5, 0,0,1,0, 0,0,0,1);
 // Hint: Keep hierarchies in mind!   
 // Hint: Play around with the headTorsoMatrix values, what changes in the render? Why?         
 
+var headMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var noseMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var tailMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var pawMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+
+// Need 9 large tentacles on each side
+var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+
+// Need 2 small tentacles on each side
+var smTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+
+// Need 5 claws per paw
+var clawMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
 
 // CREATE BODY
@@ -101,7 +141,26 @@ scene.add(torso);
 // TO-DO: PUT TOGETHER THE REST OF YOUR STAR-NOSED MOLE AND ADD TO THE SCENE!
 // Hint: Hint: Add one piece of geometry at a time, then implement the motion for that part. 
 //             Then you can make sure your hierarchy still works properly after each step.
+//
+var head = new THREE.Mesh(headGeometry,normalMaterial);
+head.setMatrix(headMatrix)
+scene.add(head);
 
+var nose = new THREE.Mesh(noseGeometry,normalMaterial);
+nose.setMatrix(noseMatrix)
+scene.add(nose);
+
+var lgTent = new THREE.Mesh(lgTentGeometry,normalMaterial);
+lgTent.setMatrix(lgTentMatrix)
+scene.add(lgTent);
+
+var smTent = new THREE.Mesh(smTentGeometry,normalMaterial);
+smTent.setMatrix(smTentMatrix)
+scene.add(smTent);
+
+var tail = new THREE.Mesh(tailGeometry,normalMaterial);
+tail.setMatrix(tailMatrix)
+scene.add(tail);
 
 
 // APPLY DIFFERENT JUMP CUTS/ANIMATIONS TO DIFFERNET KEYS
