@@ -195,29 +195,137 @@ function init_animation(p_start,p_end,t_length){
 function updateBody() {
   switch(true)
   {
-      case(key == "U" && animate):
-      var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+      case ((key == "U" || key == "D") && animate):
+          var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
-      if (time > time_end){
-        p = p1;
-        animate = false;
-        break;
-      }
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
 
-      p = (p1 - p0)*((time-time_start)/time_length) + p0; // current frame 
+          p = (p1 - p0)*((time-time_start)/time_length) + p0; // current frame 
 
-      var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                            0, Math.cos(-p),-Math.sin(-p), 0, 
-                                            0, Math.sin(-p), Math.cos(-p), 0,
-                                            0,        0,         0,        1);
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
 
-      var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-      torso.setMatrix(torsoRotMatrix); 
-      break
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
 
       // TO-DO: IMPLEMENT JUMPCUT/ANIMATION FOR EACH KEY!
       // Note: Remember spacebar sets jumpcut/animate!
       
+      // H is head right, G is head left
+      case ((key == "H" || key == "G") && animate):
+          var time = clock.getElapsedTime(); 
+
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
+
+          p = (p1 - p0)*((time-time_start)/time_length) + p0;
+
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
+
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
+      
+      // T is tail right, V is tail left
+      case ((key == "T" || key == "V") && animate):
+          var time = clock.getElapsedTime(); 
+
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
+
+          p = (p1 - p0)*((time-time_start)/time_length) + p0;
+
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
+
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
+
+      // N is tentacles fan out
+      case (key == "N" && animate):
+          var time = clock.getElapsedTime(); 
+
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
+
+          p = (p1 - p0)*((time-time_start)/time_length) + p0;
+
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
+
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
+
+      // S is swim
+      case (key == "N" && animate):
+          var time = clock.getElapsedTime(); 
+
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
+
+          p = (p1 - p0)*((time-time_start)/time_length) + p0;
+
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
+
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
+
+      // D is dig
+      case (key == "D" && animate):
+          var time = clock.getElapsedTime(); 
+
+          if (time > time_end){
+            p = p1;
+            animate = false;
+            break;
+          }
+
+          p = (p1 - p0)*((time-time_start)/time_length) + p0;
+
+          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
+                                                0, Math.cos(-p),-Math.sin(-p), 0, 
+                                                0, Math.sin(-p), Math.cos(-p), 0,
+                                                0,        0,         0,        1);
+
+          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
+          torso.setMatrix(torsoRotMatrix); 
+          break
+
+
+
+
 
 
     default:
@@ -241,6 +349,22 @@ keyboard.domElement.addEventListener('keydown',function(event){
     camera.lookAt(scene.position);}
   else if(keyboard.eventMatches(event,"U")){ 
     (key == "U")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "U")}  
+  else if(keyboard.eventMatches(event,"D")){ 
+    (key == "D")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "D")}  
+  else if(keyboard.eventMatches(event,"H")){ 
+    (key == "H")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "H")}  
+  else if(keyboard.eventMatches(event,"G")){ 
+    (key == "G")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "G")}  
+  else if(keyboard.eventMatches(event,"T")){ 
+    (key == "T")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "T")}  
+  else if(keyboard.eventMatches(event,"V")){ 
+    (key == "V")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "V")}  
+  else if(keyboard.eventMatches(event,"N")){ 
+    (key == "N")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "N")}  
+  else if(keyboard.eventMatches(event,"S")){ 
+    (key == "S")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "S")}  
+  else if(keyboard.eventMatches(event,"D")){ 
+    (key == "D")? init_animation(p1,p0,time_length) : (init_animation(0,Math.PI/4,1), key = "D")}  
 
 
   // TO-DO: BIND KEYS TO YOUR JUMP CUTS AND ANIMATIONS
