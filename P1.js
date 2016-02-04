@@ -94,11 +94,11 @@ var nose_scale = scale(3,2,1);
 noseGeometry.applyMatrix(nose_scale);
 
 var lgTentGeometry = makeCube();
-var lgTent_scale = scale(1,1,3);
+var lgTent_scale = scale(0.3,0.3,2);
 lgTentGeometry.applyMatrix(lgTent_scale);
 
 var smTentGeometry = makeCube();
-var smTent_scale = scale(1,1,2);
+var smTent_scale = scale(0.1,0.1,2);
 smTentGeometry.applyMatrix(smTent_scale);
 
 var pawGeometry = makeCube();
@@ -124,18 +124,41 @@ var torsoMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,2.5, 0,0,1,0, 0,0,0,1);
 function translation(x, y, z) {
     return new THREE.Matrix4().set(1,0,0,x, 0,1,0,y, 0,0,1,z, 0,0,0,1);
 }
+
+// Equation obtained from http://new.math.uiuc.edu/math198/MA198-2013/marya2/rotation_matrix.png
+function rotation(x, y, z) {
+    return new THREE.Matrix4().set(
+            Math.cos(z)*Math.cos(y),    -Math.sin(z)*Math.cos(x)+Math.cos(z)*Math.sin(y)*Math.sin(x),  Math.sin(z)*Math.sin(x) + Math.cos(z)*Math.sin(y)*Math.cos(x),   0,
+            Math.sin(z)*Math.cos(y),    Math.cos(z)*Math.cos(x)+Math.sin(z)*Math.sin(y)*Math.sin(x),   -Math.cos(z)*Math.sin(x)+Math.sin(z)*Math.sin(y)*Math.cos(x),    0,
+            -Math.sin(y),               Math.cos(y)*Math.sin(x),                                       Math.cos(y)*Math.cos(x),                                         0,
+            0,                          0,                                                             0,                                                               1
+            )
+}
+
+function multiply(m1, m2) {
+    return new THREE.Matrix4().multiplyMatrices(m1, m2);
+}
+
 var headMatrix = translation(0, 2.5, 5);
 var noseMatrix = translation(0, 2, 7);
 var tailMatrix = translation(0, 2.5, -6);
 
 // Paws stored in order: RF, LF, RR, LR
 var pawMatricies = []; 
-pawMatricies[0] = translation(-2, 0, 3.5);
-pawMatricies[1] = translation(2, 0, 3.5);
-pawMatricies[2] = translation(-2, 0, -1.5);
-pawMatricies[3] = translation(2, 0, -1.5);
+pawMatricies[0] = multiply(translation(-2, 0, 3.5), rotation(0.1, 0, 0));
+pawMatricies[1] = multiply(translation(2, 0, 3.5), rotation(0.1, 0, 0));
+pawMatricies[2] = multiply(translation(-2, 0, -1.5), rotation(0.1, 0, 0));
+pawMatricies[3] = multiply(translation(2, 0, -1.5), rotation(0.1, 0, 0));
 
 // Need 9 large tentacles on each side
+var lgTentLeftMatricies = []; 
+var lgTentRightMatricies = []; 
+
+for (var i = 0; i < 9; i++) {
+    lgTentLeftMatricies[i] = translation(-1, 2.5 - i*0.2, 8); 
+    lgTentRightMatricies[i] = translation(1, 2.5 - i*0.2, 8); 
+}
+
 var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
 // Need 2 small tentacles on each side
@@ -147,7 +170,7 @@ var clawMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
 // CREATE BODY
 var torso = new THREE.Mesh(torsoGeometry,normalMaterial);
-torso.setMatrix(torsoMatrix)
+torso.setMatrix(torsoMatrix);
 scene.add(torso);
 
 // TO-DO: PUT TOGETHER THE REST OF YOUR STAR-NOSED MOLE AND ADD TO THE SCENE!
@@ -155,23 +178,29 @@ scene.add(torso);
 //             Then you can make sure your hierarchy still works properly after each step.
 //
 var head = new THREE.Mesh(headGeometry,normalMaterial);
-head.setMatrix(headMatrix)
+head.setMatrix(headMatrix);
 scene.add(head);
 
 var nose = new THREE.Mesh(noseGeometry,normalMaterial);
-nose.setMatrix(noseMatrix)
+nose.setMatrix(noseMatrix);
 scene.add(nose);
 
-var lgTent = new THREE.Mesh(lgTentGeometry,normalMaterial);
-lgTent.setMatrix(lgTentMatrix)
-scene.add(lgTent);
+for (var i = 0; i < 9; i++) {
+    var lgTentRight = new THREE.Mesh(lgTentGeometry,normalMaterial);
+    lgTentRight.setMatrix(lgTentRightMatricies[i]);
+    scene.add(lgTentRight);
+
+    var lgTentLeft = new THREE.Mesh(lgTentGeometry,normalMaterial);
+    lgTentLeft.setMatrix(lgTentLeftMatricies[i]);
+    scene.add(lgTentLeft);
+}
 
 var smTent = new THREE.Mesh(smTentGeometry,normalMaterial);
-smTent.setMatrix(smTentMatrix)
+smTent.setMatrix(smTentMatrix);
 scene.add(smTent);
 
 var tail = new THREE.Mesh(tailGeometry,normalMaterial);
-tail.setMatrix(tailMatrix)
+tail.setMatrix(tailMatrix);
 scene.add(tail);
 
 for (var i = 0; i < 4; i++) {
