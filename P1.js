@@ -98,7 +98,7 @@ var lgTent_scale = scale(0.2,0.2,1.5);
 lgTentGeometry.applyMatrix(lgTent_scale);
 
 var smTentGeometry = makeCube();
-var smTent_scale = scale(0.1,0.1,2);
+var smTent_scale = scale(0.15,0.15,1);
 smTentGeometry.applyMatrix(smTent_scale);
 
 var pawGeometry = makeCube();
@@ -175,20 +175,26 @@ for (var i = 0; i < 9; i++) {
     lgTentRightMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, -1, 0.1)); 
 
     // Separate the tentacles
-    lgTentRightMatrices[i] = multiply(lgTentRightMatrices[i],translation(-0.5, i*0.02, 1)); 
+    lgTentRightMatrices[i] = multiply(lgTentRightMatrices[i],translation(-0.7, i*0.02, 1)); 
 
     // Rotate
-    lgTentLeftMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, 1, -0.1)); 
+    lgTentLeftMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, 1, 0.1)); 
 
     // Separate the tentacles
     lgTentLeftMatrices[i] = multiply(lgTentLeftMatrices[i],translation(0.5, i*0.02, 1)); 
 
 }
 
-var lgTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-
 // Need 2 small tentacles on each side
-var smTentMatrix = new THREE.Matrix4().set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+var smTentRightMatrices = [];
+var smTentLeftMatrices = [];
+
+for (var i = 0; i < 2; i++) {
+    // Rotate
+    smTentRightMatrices[i] = multiply(rotation(0.5 - i * 1, 0, 0), translation(-0.2, 0, 1));
+
+    smTentLeftMatrices[i] = multiply(rotation(0.5 - i * 1, 0, 0), translation(0.2, 0, 1));
+}
 
 
 
@@ -217,11 +223,18 @@ for (var i = 0; i < 9; i++) {
     lgTentLeft.setMatrix(lgTentLeftMatrices[i]);
     nose.add(lgTentLeft);
 }
-scene.add(nose);
 
-var smTent = new THREE.Mesh(smTentGeometry,normalMaterial);
-smTent.setMatrix(smTentMatrix);
-scene.add(smTent);
+for (var i = 0; i < 2; i++) {
+    var smTentRight = new THREE.Mesh(smTentGeometry,normalMaterial);
+    smTentRight.setMatrix(smTentRightMatrices[i]);
+    nose.add(smTentRight);
+
+    var smTentLeft = new THREE.Mesh(smTentGeometry,normalMaterial);
+    smTentLeft.setMatrix(smTentLeftMatrices[i]);
+    nose.add(smTentLeft);
+}
+
+scene.add(nose);
 
 var tail = new THREE.Mesh(tailGeometry,normalMaterial);
 tail.setMatrix(tailMatrix);
