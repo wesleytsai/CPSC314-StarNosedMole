@@ -135,6 +135,9 @@ function rotation(x, y, z) {
             )
 }
 
+function setMatrix(mesh, m1) {
+}
+
 function multiply(m1, m2) {
     return new THREE.Matrix4().multiplyMatrices(m1, m2);
 }
@@ -149,9 +152,9 @@ function popMatrix(m) {
     return matrixStack.pop();
 }
 
-var headMatrix = translation(0, 2.5, 5);
-var noseMatrix = translation(0, 2, 7);
-var tailMatrix = translation(0, 2.5, -5);
+var headMatrix = multiply(torsoMatrix, translation(0, 0, 5));
+var noseMatrix = multiply(headMatrix, translation(0, 0, 2));
+var tailMatrix = multiply(torsoMatrix, translation(0, 0, -5.5));
 
 // Paws stored in order: RF, LF, RR, LR
 var pawMatrices = []; 
@@ -213,15 +216,16 @@ scene.add(head);
 
 var nose = new THREE.Mesh(noseGeometry,normalMaterial);
 nose.setMatrix(noseMatrix);
-
+var lgTentLeft = [];
+var lgTentRight = [];
 for (var i = 0; i < 9; i++) {
-    var lgTentRight = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentRight.setMatrix(multiply(noseMatrix, lgTentRightMatrices[i]));
-    scene.add(lgTentRight);
+    lgTentRight[i] = new THREE.Mesh(lgTentGeometry,normalMaterial);
+    lgTentRight[i].setMatrix(multiply(noseMatrix, lgTentRightMatrices[i]));
+    scene.add(lgTentRight[i]);
 
-    var lgTentLeft = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentLeft.setMatrix(multiply(noseMatrix, lgTentLeftMatrices[i]));
-    scene.add(lgTentLeft);
+    lgTentLeft[i] = new THREE.Mesh(lgTentGeometry,normalMaterial);
+    lgTentLeft[i].setMatrix(multiply(noseMatrix, lgTentLeftMatrices[i]));
+    scene.add(lgTentLeft[i]);
 }
 
 for (var i = 0; i < 2; i++) {
@@ -306,6 +310,25 @@ function updateBody() {
 
           var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
           torso.setMatrix(torsoRotMatrix); 
+
+          var headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+          headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+          head.setMatrix(headRotMatrix);
+          var noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
+          nose.setMatrix(noseRotMatrix);
+          var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
+          tail.setMatrix(tailRotMatrix);
+
+          for (var i = 0; i < 9; i++) {
+              lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
+              lgTentLeft[i].setMatrix(multiply(noseRotMatrix, lgTentLeftMatrices[i]));
+          }
+
+          for (var i = 0; i < 2; i++) {
+              smTentRight.setMatrix(multiply(torsoRotMatrix, smTentRightMatrices[i]));
+              smTentLeft.setMatrix(multiply(torsoRotMatrix, smTentLeftMatrices[i]));
+          }
+
           break
 
       // TO-DO: IMPLEMENT JUMPCUT/ANIMATION FOR EACH KEY!
