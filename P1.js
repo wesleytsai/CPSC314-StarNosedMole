@@ -228,14 +228,16 @@ for (var i = 0; i < 9; i++) {
     scene.add(lgTentLeft[i]);
 }
 
+var smTentRight = [];
+var smTentLeft = [];
 for (var i = 0; i < 2; i++) {
-    var smTentRight = new THREE.Mesh(smTentGeometry,normalMaterial);
-    smTentRight.setMatrix(multiply(noseMatrix, smTentRightMatrices[i]));
-    scene.add(smTentRight);
+    smTentRight[i] = new THREE.Mesh(smTentGeometry,normalMaterial);
+    smTentRight[i].setMatrix(multiply(noseMatrix, smTentRightMatrices[i]));
+    scene.add(smTentRight[i]);
 
-    var smTentLeft = new THREE.Mesh(smTentGeometry,normalMaterial);
-    smTentLeft.setMatrix(multiply(noseMatrix, smTentLeftMatrices[i]));
-    scene.add(smTentLeft);
+    smTentLeft[i] = new THREE.Mesh(smTentGeometry,normalMaterial);
+    smTentLeft[i].setMatrix(multiply(noseMatrix, smTentLeftMatrices[i]));
+    scene.add(smTentLeft[i]);
 }
 
 scene.add(nose);
@@ -245,16 +247,18 @@ tail.setMatrix(tailMatrix);
 scene.add(tail);
 
 
+var paw = [];
+var claw = [];
 for (var i = 0; i < 4; i++) {
 
-    var paw = new THREE.Mesh(pawGeometry,normalMaterial);
-    paw.setMatrix(pawMatrices[i]);
-    scene.add(paw);
+    paw[i] = new THREE.Mesh(pawGeometry,normalMaterial);
+    paw[i].setMatrix(pawMatrices[i]);
+    scene.add(paw[i]);
 
     for (var j = 0; j < 5; j++) {
-        claw = new THREE.Mesh(clawGeometry,normalMaterial);
-        claw.setMatrix(multiply(pawMatrices[i], clawMatrices[j]));
-        scene.add(claw);
+        claw[i*5 + j] = new THREE.Mesh(clawGeometry,normalMaterial);
+        claw[i*5 + j].setMatrix(multiply(pawMatrices[i], clawMatrices[j]));
+        scene.add(claw[i*5 + j]);
     }
 }
 
@@ -319,14 +323,24 @@ function updateBody() {
           var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
           tail.setMatrix(tailRotMatrix);
 
+          for (var i = 0; i < 4; i++) {
+              var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
+              paw[i].setMatrix(pawRotMatrix);
+              for (var j = 0; j < 5; j++) {
+                  claw[i * 5 + j].setMatrix(multiply(pawRotMatrix, clawMatrices[j]));
+              }
+          }
+
+
+
           for (var i = 0; i < 9; i++) {
               lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
               lgTentLeft[i].setMatrix(multiply(noseRotMatrix, lgTentLeftMatrices[i]));
           }
 
           for (var i = 0; i < 2; i++) {
-              smTentRight.setMatrix(multiply(torsoRotMatrix, smTentRightMatrices[i]));
-              smTentLeft.setMatrix(multiply(torsoRotMatrix, smTentLeftMatrices[i]));
+              smTentRight[i].setMatrix(multiply(noseRotMatrix, smTentRightMatrices[i]));
+              smTentLeft[i].setMatrix(multiply(noseRotMatrix, smTentLeftMatrices[i]));
           }
 
           break
@@ -336,116 +350,26 @@ function updateBody() {
       
       // H is head right, G is head left
       case ((key == "H" || key == "G") && animate):
-          var time = clock.getElapsedTime(); 
-
-          if (time > time_end){
-            p = p1;
-            animate = false;
-            break;
-          }
-
-          p = (p1 - p0)*((time-time_start)/time_length) + p0;
-
-          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                                0, Math.cos(-p),-Math.sin(-p), 0, 
-                                                0, Math.sin(-p), Math.cos(-p), 0,
-                                                0,        0,         0,        1);
-
-          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-          torso.setMatrix(torsoRotMatrix); 
           break
       
       // T is tail right, V is tail left
       case ((key == "T" || key == "V") && animate):
-          var time = clock.getElapsedTime(); 
-
-          if (time > time_end){
-            p = p1;
-            animate = false;
-            break;
-          }
-
-          p = (p1 - p0)*((time-time_start)/time_length) + p0;
-
-          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                                0, Math.cos(-p),-Math.sin(-p), 0, 
-                                                0, Math.sin(-p), Math.cos(-p), 0,
-                                                0,        0,         0,        1);
-
-          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-          torso.setMatrix(torsoRotMatrix); 
           break
 
       // N is tentacles fan out
       case (key == "N" && animate):
-          var time = clock.getElapsedTime(); 
-
-          if (time > time_end){
-            p = p1;
-            animate = false;
-            break;
-          }
-
-          p = (p1 - p0)*((time-time_start)/time_length) + p0;
-
-          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                                0, Math.cos(-p),-Math.sin(-p), 0, 
-                                                0, Math.sin(-p), Math.cos(-p), 0,
-                                                0,        0,         0,        1);
-
-          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-          torso.setMatrix(torsoRotMatrix); 
           break
 
       // S is Swim
       case (key == "N" && animate):
-          var time = clock.getElapsedTime(); 
-
-          if (time > time_end){
-            p = p1;
-            animate = false;
-            break;
-          }
-
-          p = (p1 - p0)*((time-time_start)/time_length) + p0;
-
-          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                                0, Math.cos(-p),-Math.sin(-p), 0, 
-                                                0, Math.sin(-p), Math.cos(-p), 0,
-                                                0,        0,         0,        1);
-
-          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-          torso.setMatrix(torsoRotMatrix); 
           break
 
       // D is dig
       case (key == "D" && animate):
-          var time = clock.getElapsedTime(); 
-
-          if (time > time_end){
-            p = p1;
-            animate = false;
-            break;
-          }
-
-          p = (p1 - p0)*((time-time_start)/time_length) + p0;
-
-          var rotateZ = new THREE.Matrix4().set(1,        0,         0,        0, 
-                                                0, Math.cos(-p),-Math.sin(-p), 0, 
-                                                0, Math.sin(-p), Math.cos(-p), 0,
-                                                0,        0,         0,        1);
-
-          var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix,rotateZ);
-          torso.setMatrix(torsoRotMatrix); 
           break
 
-
-
-
-
-
-    default:
-      break;
+        default:
+          break;
   }
 }
 
