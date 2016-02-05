@@ -216,22 +216,22 @@ nose.setMatrix(noseMatrix);
 
 for (var i = 0; i < 9; i++) {
     var lgTentRight = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentRight.setMatrix(lgTentRightMatrices[i]);
-    nose.add(lgTentRight);
+    lgTentRight.setMatrix(multiply(noseMatrix, lgTentRightMatrices[i]));
+    scene.add(lgTentRight);
 
     var lgTentLeft = new THREE.Mesh(lgTentGeometry,normalMaterial);
-    lgTentLeft.setMatrix(lgTentLeftMatrices[i]);
-    nose.add(lgTentLeft);
+    lgTentLeft.setMatrix(multiply(noseMatrix, lgTentLeftMatrices[i]));
+    scene.add(lgTentLeft);
 }
 
 for (var i = 0; i < 2; i++) {
     var smTentRight = new THREE.Mesh(smTentGeometry,normalMaterial);
-    smTentRight.setMatrix(smTentRightMatrices[i]);
-    nose.add(smTentRight);
+    smTentRight.setMatrix(multiply(noseMatrix, smTentRightMatrices[i]));
+    scene.add(smTentRight);
 
     var smTentLeft = new THREE.Mesh(smTentGeometry,normalMaterial);
-    smTentLeft.setMatrix(smTentLeftMatrices[i]);
-    nose.add(smTentLeft);
+    smTentLeft.setMatrix(multiply(noseMatrix, smTentLeftMatrices[i]));
+    scene.add(smTentLeft);
 }
 
 scene.add(nose);
@@ -245,14 +245,13 @@ for (var i = 0; i < 4; i++) {
 
     var paw = new THREE.Mesh(pawGeometry,normalMaterial);
     paw.setMatrix(pawMatrices[i]);
+    scene.add(paw);
 
     for (var j = 0; j < 5; j++) {
         claw = new THREE.Mesh(clawGeometry,normalMaterial);
-        claw.setMatrix(clawMatrices[j]);
-        paw.add(claw);
+        claw.setMatrix(multiply(pawMatrices[i], clawMatrices[j]));
+        scene.add(claw);
     }
-
-    scene.add(paw);
 }
 
 
