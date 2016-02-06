@@ -155,6 +155,7 @@ function popMatrix(m) {
 }
 
 var headMatrix = multiply(torsoMatrix, translation(0, 0, 5));
+var inverseHeadMatrix = multiply(torsoMatrix, translation(0, 0, -5));
 var noseMatrix = multiply(headMatrix, translation(0, 0, 2));
 var tailMatrix = multiply(torsoMatrix, translation(0, 0, -5.5));
 
@@ -311,6 +312,7 @@ function updateBody() {
 
         // H is head right, G is head left
         case ((key == "H" || key == "G") && animate):
+            moveHeadRight();
             break;
 
         // T is tail right, V is tail left
@@ -337,7 +339,37 @@ function updateBody() {
 
 
 function moveHeadRight() {
+    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
+    if (time > time_end) {
+        p = p1;
+        animate = false;
+        return;
+    }
+
+    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+
+    headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+    headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
+    headRotMatrix = multiply(headRotMatrix, rotation(0, -p, 0));
+    head.setMatrix(headRotMatrix);
+
+    noseRotMatrix = multiply(headRotMatrix, noseMatrix);
+    noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
+    noseRotMatrix = multiply(noseRotMatrix, inverseHeadMatrix);
+    noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
+    nose.setMatrix(noseRotMatrix);
+
+    for (var i = 0; i < 9; i++) {
+        lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
+        lgTentLeft[i].setMatrix(multiply(noseRotMatrix, lgTentLeftMatrices[i]));
+    }
+
+    for (var i = 0; i < 2; i++) {
+        smTentRight[i].setMatrix(multiply(noseRotMatrix, smTentRightMatrices[i]));
+        smTentLeft[i].setMatrix(multiply(noseRotMatrix, smTentLeftMatrices[i]));
+    }
+    
 }
 
 
