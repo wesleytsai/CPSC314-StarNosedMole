@@ -60,9 +60,16 @@ var grid = new THREE.Line(gridGeometry, gridMaterial, THREE.LinePieces);
 // MATERIALS
 // Note: Feel free to be creative with this! 
 var normalMaterial = new THREE.MeshNormalMaterial();
-var brownMat = new THREE.MeshNormalMaterial();
-var lightBrownMat = new THREE.MeshNormalMaterial();
-var clawMat = new THREE.MeshNormalMaterial();
+var brownMat = new THREE.MeshBasicMaterial();
+brownMat.color = new THREE.Color(0x612D1C);
+var lightBrownMat = new THREE.MeshBasicMaterial();
+lightBrownMat.color = new THREE.Color(0x9E7C55);
+var clawMat = new THREE.MeshBasicMaterial();
+clawMat.color = new THREE.Color(0xCFBEAB);
+
+var tentMat = new THREE.MeshBasicMaterial();
+tentMat.color = new THREE.Color(0xF57B56);
+
 
 // function drawCube()
 // Draws a unit cube centered about the origin.
@@ -93,7 +100,7 @@ var head_scale = scale(3, 3, 4);
 headGeometry.applyMatrix(head_scale);
 
 var noseGeometry = makeCube();
-var nose_scale = scale(3, 2, 1);
+var nose_scale = scale(3, 2, 0.5);
 noseGeometry.applyMatrix(nose_scale);
 
 var lgTentGeometry = makeCube();
@@ -159,7 +166,7 @@ function popMatrix(m) {
 
 var headMatrix = multiply(torsoMatrix, translation(0, 0, 5));
 var inverseHeadMatrix = multiply(torsoMatrix, translation(0, 0, -5));
-var noseMatrix = multiply(headMatrix, translation(0, 0, 2));
+var noseMatrix = multiply(headMatrix, translation(0, 0, 2.25));
 var tailMatrix = multiply(torsoMatrix, translation(0, 0, -5.5));
 
 // Paws stored in order: RF, LF, RR, LR
@@ -206,7 +213,7 @@ for (var i = 0; i < 2; i++) {
 
 
 // CREATE BODY
-var torso = new THREE.Mesh(torsoGeometry, normalMaterial);
+var torso = new THREE.Mesh(torsoGeometry, brownMat);
 torso.setMatrix(torsoMatrix);
 scene.add(torso);
 
@@ -214,20 +221,20 @@ scene.add(torso);
 // Hint: Hint: Add one piece of geometry at a time, then implement the motion for that part. 
 //             Then you can make sure your hierarchy still works properly after each step.
 //
-var head = new THREE.Mesh(headGeometry, normalMaterial);
+var head = new THREE.Mesh(headGeometry, lightBrownMat);
 head.setMatrix(headMatrix);
 scene.add(head);
 
-var nose = new THREE.Mesh(noseGeometry, normalMaterial);
+var nose = new THREE.Mesh(noseGeometry, brownMat);
 nose.setMatrix(noseMatrix);
 var lgTentLeft = [];
 var lgTentRight = [];
 for (var i = 0; i < 9; i++) {
-    lgTentRight[i] = new THREE.Mesh(lgTentGeometry, normalMaterial);
+    lgTentRight[i] = new THREE.Mesh(lgTentGeometry, tentMat);
     lgTentRight[i].setMatrix(multiply(noseMatrix, lgTentRightMatrices[i]));
     scene.add(lgTentRight[i]);
 
-    lgTentLeft[i] = new THREE.Mesh(lgTentGeometry, normalMaterial);
+    lgTentLeft[i] = new THREE.Mesh(lgTentGeometry, tentMat);
     lgTentLeft[i].setMatrix(multiply(noseMatrix, lgTentLeftMatrices[i]));
     scene.add(lgTentLeft[i]);
 }
@@ -235,18 +242,18 @@ for (var i = 0; i < 9; i++) {
 var smTentRight = [];
 var smTentLeft = [];
 for (var i = 0; i < 2; i++) {
-    smTentRight[i] = new THREE.Mesh(smTentGeometry, normalMaterial);
+    smTentRight[i] = new THREE.Mesh(smTentGeometry, lightBrownMat);
     smTentRight[i].setMatrix(multiply(noseMatrix, smTentRightMatrices[i]));
     scene.add(smTentRight[i]);
 
-    smTentLeft[i] = new THREE.Mesh(smTentGeometry, normalMaterial);
+    smTentLeft[i] = new THREE.Mesh(smTentGeometry, lightBrownMat);
     smTentLeft[i].setMatrix(multiply(noseMatrix, smTentLeftMatrices[i]));
     scene.add(smTentLeft[i]);
 }
 
 scene.add(nose);
 
-var tail = new THREE.Mesh(tailGeometry, normalMaterial);
+var tail = new THREE.Mesh(tailGeometry, clawMat);
 tail.setMatrix(tailMatrix);
 scene.add(tail);
 
@@ -255,12 +262,12 @@ var paw = [];
 var claw = [];
 for (var i = 0; i < 4; i++) {
 
-    paw[i] = new THREE.Mesh(pawGeometry, normalMaterial);
+    paw[i] = new THREE.Mesh(pawGeometry, lightBrownMat);
     paw[i].setMatrix(pawMatrices[i]);
     scene.add(paw[i]);
 
     for (var j = 0; j < 5; j++) {
-        claw[i * 5 + j] = new THREE.Mesh(clawGeometry, normalMaterial);
+        claw[i * 5 + j] = new THREE.Mesh(clawGeometry, clawMat);
         claw[i * 5 + j].setMatrix(multiply(pawMatrices[i], clawMatrices[j]));
         scene.add(claw[i * 5 + j]);
     }
