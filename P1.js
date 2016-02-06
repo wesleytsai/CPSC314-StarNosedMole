@@ -110,7 +110,7 @@ var claw_scale = scale(0.3, 0.5, 1);
 clawGeometry.applyMatrix(claw_scale);
 
 var tailGeometry = makeCube();
-var tail_scale = scale(1, 1, 3);
+var tail_scale = scale(1, 1, 6);
 tailGeometry.applyMatrix(tail_scale);
 
 // MATRICES
@@ -360,13 +360,15 @@ function get_p_frame() {
 function moveHead(direction) {
     // direction: -1 for right, 1 for left
 
+    var head_rotation_point_z = 1.5;
+
     p = get_p_frame();
 
-    // TODO rotation needs to happen around the correct point
-
     headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+    headRotMatrix = multiply(headRotMatrix, translation(0, 0, -head_rotation_point_z));
     headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
     headRotMatrix = multiply(headRotMatrix, rotation(0, direction*p, 0));
+    headRotMatrix = multiply(headRotMatrix, translation(0, 0, head_rotation_point_z));
     head.setMatrix(headRotMatrix);
 
     noseRotMatrix = multiply(headRotMatrix, noseMatrix);
@@ -391,13 +393,19 @@ function moveHead(direction) {
 function moveTail(direction) {
     // direction: -1 for right, 1 for left
 
+    var tail_rotation_point_z = 2.0;
+
     p = get_p_frame();
 
-    // TODO rotation needs to happen around the correct point
-
     tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
-    tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
+
+    // Translate to point of rotation and translate back
+    tailRotMatrix = multiply(tailRotMatrix, translation(0,0,tail_rotation_point_z));
     tailRotMatrix = multiply(tailRotMatrix, rotation(0, direction*p, 0));
+    tailRotMatrix = multiply(tailRotMatrix, translation(0,0,-tail_rotation_point_z));
+
+    tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
+
     tail.setMatrix(tailRotMatrix);
 }
 
@@ -429,7 +437,6 @@ function bodyTilt(reverse) {
             claw[i * 5 + j].setMatrix(multiply(pawRotMatrix, clawMatrices[j]));
         }
     }
-
 
     for (var i = 0; i < 9; i++) {
         lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
