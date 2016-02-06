@@ -467,15 +467,8 @@ function dig() {
 
 // N is for tentacle fanning
 function fanTents() {
-    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+    p = get_p_frame();
 
-    if (time > time_end) {
-        p = p1;
-        animate = false;
-        return;
-    }
-
-    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
     for (var i = 0; i < 9; i++) {
         var rightRotMatrix = multiply(noseRotMatrix, lgTentRightMatrices[i]);
         rightRotMatrix = multiply(rightRotMatrix, rotation(0, -p, 0));
