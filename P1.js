@@ -115,6 +115,7 @@ tailGeometry.applyMatrix(tail_scale);
 
 // MATRICES
 var torsoMatrix = new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, 0, 2.5, 0, 0, 1, 0, 0, 0, 0, 1);
+var inverseTorsoMatrix = new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, 0, -2.5, 0, 0, 1, 0, 0, 0, 0, 1);
 
 // TO-DO: INITIALIZE THE REST OF YOUR MATRICES 
 // Note: Use of parent attribute is not allowed.
@@ -126,6 +127,7 @@ function translation(x, y, z) {
 }
 
 // Equation obtained from http://new.math.uiuc.edu/math198/MA198-2013/marya2/rotation_matrix.png
+// The equation is the matrix multiplication of RotateZ * RotateY * RotateX
 function rotation(x, y, z) {
     return new THREE.Matrix4().set(
         Math.cos(z) * Math.cos(y), -Math.sin(z) * Math.cos(x) + Math.cos(z) * Math.sin(y) * Math.sin(x), Math.sin(z) * Math.sin(x) + Math.cos(z) * Math.sin(y) * Math.cos(x), 0,
@@ -313,15 +315,20 @@ function updateBody() {
             torso.setMatrix(torsoRotMatrix);
 
             var headRotMatrix = multiply(torsoRotMatrix, headMatrix);
-            headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+            headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
             head.setMatrix(headRotMatrix);
+
             var noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
+            noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
             nose.setMatrix(noseRotMatrix);
+
             var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
+            tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
             tail.setMatrix(tailRotMatrix);
 
             for (var i = 0; i < 4; i++) {
                 var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
+                pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
                 paw[i].setMatrix(pawRotMatrix);
                 for (var j = 0; j < 5; j++) {
                     claw[i * 5 + j].setMatrix(multiply(pawRotMatrix, clawMatrices[j]));
