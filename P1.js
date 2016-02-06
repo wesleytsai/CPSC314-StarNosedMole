@@ -313,7 +313,7 @@ function updateBody() {
     var direction;
     p = get_p_frame();
     switch (true) {
-        case ((key == "U" || key == "E") && animate):
+        case ((key == "U" || key == "E")):
             direction = key == "E" ? -1 : 1;
             bodyTilt(direction);
             break;
@@ -322,29 +322,29 @@ function updateBody() {
         // Note: Remember spacebar sets jumpcut/animate!
 
         // H is head right, G is head left
-        case ((key == "H" || key == "G") && animate):
+        case (key == "H" || key == "G"):
             direction = key == "H" ? -1 : 1;
             moveHead(direction);
             break;
 
         // T is tail right, V is tail left
-        case ((key == "T" || key == "V") && animate):
+        case (key == "T" || key == "V"):
             direction = key == "V" ? -1 : 1;
             moveTail(direction);
             break;
 
         // N is tentacles fan out
-        case (key == "N" && animate):
+        case (key == "N"):
             fanTents();
             break;
 
         // S is Swim
-        case (key == "S" && animate):
+        case (key == "S"):
             performSwimmingStarNosedMoleAnimation();
             break;
 
         // D is dig
-        case (key == "D" && animate):
+        case (key == "D"):
             dig();
             break;
 
