@@ -264,7 +264,7 @@ for (var i = 0; i < 4; i++) {
 }
 
 
-// APPLY DIFFERENT JUMP CUTS/ANIMATIONS TO DIFFERNET KEYS
+// APPLY DIFFERENT JUMP CUTS/ANIMATIONS TO DIFFERENT KEYS
 // Note: The start of "U" animation has been done for you, you must implement the hiearchy and jumpcut.
 // Hint: There are other ways to manipulate and grab clock values!!
 // Hint: Check THREE.js clock documenation for ideas.
@@ -293,88 +293,99 @@ function init_animation(p_start, p_end, t_length) {
     return;
 }
 
+
 function updateBody() {
     switch (true) {
         case ((key == "U" || key == "D") && animate):
-            var time = clock.getElapsedTime(); // t seconds passed since the clock started.
-
-            if (time > time_end) {
-                p = p1;
-                animate = false;
-                break;
-            }
-
-            p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
-
-            var rotateZ = new THREE.Matrix4().set(1, 0, 0, 0,
-                0, Math.cos(-p), -Math.sin(-p), 0,
-                0, Math.sin(-p), Math.cos(-p), 0,
-                0, 0, 0, 1);
-
-            var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotateZ);
-            torso.setMatrix(torsoRotMatrix);
-
-            var headRotMatrix = multiply(torsoRotMatrix, headMatrix);
-            headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
-            head.setMatrix(headRotMatrix);
-
-            var noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
-            noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
-            nose.setMatrix(noseRotMatrix);
-
-            var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
-            tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
-            tail.setMatrix(tailRotMatrix);
-
-            for (var i = 0; i < 4; i++) {
-                var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
-                pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
-                paw[i].setMatrix(pawRotMatrix);
-                for (var j = 0; j < 5; j++) {
-                    claw[i * 5 + j].setMatrix(multiply(pawRotMatrix, clawMatrices[j]));
-                }
-            }
-
-
-            for (var i = 0; i < 9; i++) {
-                lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
-                lgTentLeft[i].setMatrix(multiply(noseRotMatrix, lgTentLeftMatrices[i]));
-            }
-
-            for (var i = 0; i < 2; i++) {
-                smTentRight[i].setMatrix(multiply(noseRotMatrix, smTentRightMatrices[i]));
-                smTentLeft[i].setMatrix(multiply(noseRotMatrix, smTentLeftMatrices[i]));
-            }
-
-            break
+            bodyTilt();
+            break;
 
         // TO-DO: IMPLEMENT JUMPCUT/ANIMATION FOR EACH KEY!
         // Note: Remember spacebar sets jumpcut/animate!
 
         // H is head right, G is head left
         case ((key == "H" || key == "G") && animate):
-            break
+            break;
 
         // T is tail right, V is tail left
         case ((key == "T" || key == "V") && animate):
-            break
+            break;
 
         // N is tentacles fan out
         case (key == "N" && animate):
-            break
+            break;
 
         // S is Swim
-        case (key == "N" && animate):
-            break
+        case (key == "S" && animate):
+            break;
 
         // D is dig
         case (key == "D" && animate):
-            break
+            break;
 
         default:
             break;
     }
 }
+
+
+function moveHeadRight() {
+
+}
+
+
+function bodyTilt() {
+    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+
+    if (time > time_end) {
+        p = p1;
+        animate = false;
+        return;
+    }
+
+    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+
+    var rotateZ = new THREE.Matrix4().set(1, 0, 0, 0,
+        0, Math.cos(-p), -Math.sin(-p), 0,
+        0, Math.sin(-p), Math.cos(-p), 0,
+        0, 0, 0, 1);
+
+    var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotateZ);
+    torso.setMatrix(torsoRotMatrix);
+
+    var headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+    headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
+    head.setMatrix(headRotMatrix);
+
+    var noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
+    noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
+    nose.setMatrix(noseRotMatrix);
+
+    var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
+    tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
+    tail.setMatrix(tailRotMatrix);
+
+    for (var i = 0; i < 4; i++) {
+        var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
+        pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
+        paw[i].setMatrix(pawRotMatrix);
+        for (var j = 0; j < 5; j++) {
+            claw[i * 5 + j].setMatrix(multiply(pawRotMatrix, clawMatrices[j]));
+        }
+    }
+
+
+    for (var i = 0; i < 9; i++) {
+        lgTentRight[i].setMatrix(multiply(noseRotMatrix, lgTentRightMatrices[i]));
+        lgTentLeft[i].setMatrix(multiply(noseRotMatrix, lgTentLeftMatrices[i]));
+    }
+
+    for (var i = 0; i < 2; i++) {
+        smTentRight[i].setMatrix(multiply(noseRotMatrix, smTentRightMatrices[i]));
+        smTentLeft[i].setMatrix(multiply(noseRotMatrix, smTentLeftMatrices[i]));
+    }
+}
+
 
 // LISTEN TO KEYBOARD
 // Hint: Pay careful attention to how the keys already specified work!
