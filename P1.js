@@ -357,7 +357,7 @@ function updateBody() {
 function get_p_frame() {
     var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
-    if (time > time_end || anim_mode == "jumpcut") {
+    if (time > time_end || animMode == AnimModes.JUMPCUT) {
         p = p1;
         animate = false;
         return p;
@@ -525,7 +525,11 @@ function fanTents() {
 var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
 var key;
-var anim_mode = "smooth"; // "jumpcut" or "smooth"
+var AnimModes = {
+    SMOOTH: "smooth",
+    JUMPCUT: "jumpcut"
+};
+var animMode = AnimModes.SMOOTH;
 var swimState = 0;
 keyboard.domElement.addEventListener('keydown', function (event) {
     if (event.repeat)
@@ -582,10 +586,10 @@ keyboard.domElement.addEventListener('keydown', function (event) {
     // Note: Remember spacebar sets jumpcut/animate!
     // Hint: Look up "threex.keyboardstate by Jerome Tienne" for more info.
     else if (keyboard.eventMatches(event, "space")) {
-        if (anim_mode == "jumpcut")
-            anim_mode = "smooth";
+        if (animMode == AnimModes.JUMPCUT)
+            animMode = AnimModes.SMOOTH;
         else
-            anim_mode = "jumpcut";
+            animMode = AnimModes.JUMPCUT;
     }
 });
 
