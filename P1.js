@@ -312,7 +312,8 @@ function updateBody() {
 
         // H is head right, G is head left
         case ((key == "H" || key == "G") && animate):
-            moveHeadRight();
+            var direction = key == "H" ? -1 : 1;
+            moveHead(direction);
             break;
 
         // T is tail right, V is tail left
@@ -338,7 +339,8 @@ function updateBody() {
 }
 
 
-function moveHeadRight() {
+function moveHead(direction) {
+    // direction: -1 for right, 1 for left
     var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
     if (time > time_end) {
@@ -351,7 +353,7 @@ function moveHeadRight() {
 
     headRotMatrix = multiply(torsoRotMatrix, headMatrix);
     headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
-    headRotMatrix = multiply(headRotMatrix, rotation(0, -p, 0));
+    headRotMatrix = multiply(headRotMatrix, rotation(0, direction*p, 0));
     head.setMatrix(headRotMatrix);
 
     noseRotMatrix = multiply(headRotMatrix, noseMatrix);
