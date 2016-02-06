@@ -339,17 +339,24 @@ function updateBody() {
 }
 
 
-function moveHead(direction) {
-    // direction: -1 for right, 1 for left
+function get_p_frame() {
     var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
     if (time > time_end) {
         p = p1;
         animate = false;
-        return;
+        return p;
     }
 
     p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+    return p;
+}
+
+
+function moveHead(direction) {
+    // direction: -1 for right, 1 for left
+
+    p = get_p_frame();
 
     headRotMatrix = multiply(torsoRotMatrix, headMatrix);
     headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
@@ -375,16 +382,15 @@ function moveHead(direction) {
 }
 
 
+function moveTail(direction) {
+    // direction: -1 for right, 1 for left
+
+    p = get_p_frame();
+}
+
+
 function bodyTilt(reverse) {
-    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
-
-    if (time > time_end) {
-        p = p1;
-        animate = false;
-        return;
-    }
-
-    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+    p = get_p_frame();
     if (reverse) p = -p;
 
     torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotation(-p, 0, 0));
@@ -425,15 +431,8 @@ function bodyTilt(reverse) {
 
 // D is for dig
 function dig() {
-    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+    p = get_p_frame();
 
-    if (time > time_end) {
-        p = p1;
-        animate = false;
-        return;
-    }
-
-    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
     for (var i = 0; i < 2; i++) {
         var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
         pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
