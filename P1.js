@@ -60,6 +60,9 @@ var grid = new THREE.Line(gridGeometry, gridMaterial, THREE.LinePieces);
 // MATERIALS
 // Note: Feel free to be creative with this! 
 var normalMaterial = new THREE.MeshNormalMaterial();
+var brownMat = new THREE.MeshNormalMaterial();
+var lightBrownMat = new THREE.MeshNormalMaterial();
+var clawMat = new THREE.MeshNormalMaterial();
 
 // function drawCube()
 // Draws a unit cube centered about the origin.
@@ -367,18 +370,18 @@ function performSwimmingStarNosedMoleAnimation() {
     var lr = 3;
 
     if (p > 0) {
-        fanTents();
         moveHead(right);
         movePaw(lf);
         movePaw(rr);
         moveTail(left);
+        fanTents();
     } else {
         p = -p;
-        fanTents();
         moveHead(left);
         movePaw(rf);
         movePaw(lr);
         moveTail(right);
+        fanTents();
     }
 }
 
