@@ -327,6 +327,7 @@ function updateBody() {
 
         // D is dig
         case (key == "D" && animate):
+            dig();
             break;
 
         default:
@@ -385,6 +386,30 @@ function bodyTilt(reverse) {
     for (var i = 0; i < 2; i++) {
         smTentRight[i].setMatrix(multiply(noseRotMatrix, smTentRightMatrices[i]));
         smTentLeft[i].setMatrix(multiply(noseRotMatrix, smTentLeftMatrices[i]));
+    }
+}
+
+// D is for dig
+function dig() {
+    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+
+    if (time > time_end) {
+        p = p1;
+        animate = false;
+        return;
+    }
+
+    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+    for (var i = 0; i < 2; i++) {
+        var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
+        pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
+        pawRotMatrix = multiply(pawRotMatrix, rotation(p, 0, 0));
+        paw[i].setMatrix(pawRotMatrix);
+        for (var j = 0; j < 5; j++) {
+            var clawRotMatrix = multiply(pawRotMatrix, clawMatrices[j]);
+            clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0))
+            claw[i * 5 + j].setMatrix(clawRotMatrix);
+        }
     }
 }
 
