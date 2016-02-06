@@ -344,7 +344,7 @@ function updateBody() {
 function get_p_frame() {
     var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
-    if (time > time_end) {
+    if (time > time_end || anim_mode == "jumpcut") {
         p = p1;
         animate = false;
         return p;
@@ -451,7 +451,7 @@ function dig() {
         paw[i].setMatrix(pawRotMatrix);
         for (var j = 0; j < 5; j++) {
             var clawRotMatrix = multiply(pawRotMatrix, clawMatrices[j]);
-            clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0))
+            clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0));
             claw[i * 5 + j].setMatrix(clawRotMatrix);
         }
     }
@@ -463,6 +463,7 @@ function dig() {
 var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
 var key;
+var anim_mode = "smooth"; // "jumpcut" or "smooth"
 keyboard.domElement.addEventListener('keydown', function (event) {
     if (event.repeat)
         return;
@@ -501,13 +502,15 @@ keyboard.domElement.addEventListener('keydown', function (event) {
     else if (keyboard.eventMatches(event, "D")) {
         (key == "D") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "D")
     }
-
-
     // TO-DO: BIND KEYS TO YOUR JUMP CUTS AND ANIMATIONS
     // Note: Remember spacebar sets jumpcut/animate!
     // Hint: Look up "threex.keyboardstate by Jerome Tienne" for more info.
-
-
+    else if (keyboard.eventMatches(event, "space")) {
+        if (anim_mode == "jumpcut")
+            anim_mode = "smooth";
+        else
+            anim_mode = "jumpcut";
+    }
 });
 
 // SETUP UPDATE CALL-BACK
