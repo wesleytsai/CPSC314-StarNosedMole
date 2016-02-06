@@ -301,9 +301,11 @@ function init_animation(p_start, p_end, t_length) {
 
 
 function updateBody() {
+    var reverse;
+    var direction;
     switch (true) {
         case ((key == "U" || key == "E") && animate):
-            var reverse = key == "E" ? true : false;
+            reverse = key == "E" ? true : false;
             bodyTilt(reverse);
             break;
 
@@ -312,13 +314,13 @@ function updateBody() {
 
         // H is head right, G is head left
         case ((key == "H" || key == "G") && animate):
-            var direction = key == "H" ? -1 : 1;
+            direction = key == "H" ? -1 : 1;
             moveHead(direction);
             break;
 
         // T is tail right, V is tail left
         case ((key == "T" || key == "V") && animate):
-            var direction = key == "V" ? -1 : 1;
+            direction = key == "V" ? -1 : 1;
             moveTail(direction);
             break;
 
