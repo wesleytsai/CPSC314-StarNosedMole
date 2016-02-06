@@ -280,6 +280,11 @@ var time_end; // end time of animation
 var p; // current frame
 var animate = false; // animate?
 
+var torsoRotMatrix = torsoMatrix;
+var headRotMatrix = headMatrix;
+var noseRotMatrix = noseMatrix;
+var tailRotMatrix = tailMatrix;
+
 // function init_animation()
 // Initializes parameters and sets animate flag to true.
 // Input: start position or angle, end position or angle, and total time of animation.
@@ -296,8 +301,9 @@ function init_animation(p_start, p_end, t_length) {
 
 function updateBody() {
     switch (true) {
-        case ((key == "U" || key == "D") && animate):
-            bodyTilt();
+        case ((key == "U" || key == "E") && animate):
+            var reverse = key == "E" ? true : false;
+            bodyTilt(reverse);
             break;
 
         // TO-DO: IMPLEMENT JUMPCUT/ANIMATION FOR EACH KEY!
@@ -334,7 +340,7 @@ function moveHeadRight() {
 }
 
 
-function bodyTilt() {
+function bodyTilt(reverse) {
     var time = clock.getElapsedTime(); // t seconds passed since the clock started.
 
     if (time > time_end) {
@@ -344,24 +350,20 @@ function bodyTilt() {
     }
 
     p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+    if (reverse) p = -p;
 
-    var rotateZ = new THREE.Matrix4().set(1, 0, 0, 0,
-        0, Math.cos(-p), -Math.sin(-p), 0,
-        0, Math.sin(-p), Math.cos(-p), 0,
-        0, 0, 0, 1);
-
-    var torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotateZ);
+    torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotation(-p, 0, 0));
     torso.setMatrix(torsoRotMatrix);
 
-    var headRotMatrix = multiply(torsoRotMatrix, headMatrix);
+    headRotMatrix = multiply(torsoRotMatrix, headMatrix);
     headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
     head.setMatrix(headRotMatrix);
 
-    var noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
+    noseRotMatrix = multiply(torsoRotMatrix, noseMatrix);
     noseRotMatrix = multiply(noseRotMatrix, inverseTorsoMatrix);
     nose.setMatrix(noseRotMatrix);
 
-    var tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
+    tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
     tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
     tail.setMatrix(tailRotMatrix);
 
@@ -406,8 +408,8 @@ keyboard.domElement.addEventListener('keydown', function (event) {
     else if (keyboard.eventMatches(event, "U")) {
         (key == "U") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "U")
     }
-    else if (keyboard.eventMatches(event, "D")) {
-        (key == "D") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "D")
+    else if (keyboard.eventMatches(event, "E")) {
+        (key == "E") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "E")
     }
     else if (keyboard.eventMatches(event, "H")) {
         (key == "H") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "H")
