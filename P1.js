@@ -178,16 +178,18 @@ var lgTentRightMatrices = [];
 
 for (var i = 0; i < 9; i++) {
     // Rotate
-    lgTentRightMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, -1, 0.1));
+    lgTentRightMatrices[i] = multiply(translation(0.15, 0.15, 0.8), rotation(1.2 - 0.3 * i, -0.5, 0));
 
     // Separate the tentacles
-    lgTentRightMatrices[i] = multiply(lgTentRightMatrices[i], translation(-0.7, i * 0.02, 1));
+    lgTentRightMatrices[i] = multiply(lgTentRightMatrices[i], translation(-0.7, i * 0.02, 0.5));
+    lgTentRightMatrices[i] = multiply(noseMatrix, lgTentRightMatrices[i]);
 
     // Rotate
-    lgTentLeftMatrices[i] = multiply(translation(0.15, 0.15, 1), rotation(1.2 - 0.3 * i, 1, 0.1));
+    lgTentLeftMatrices[i] = multiply(translation(0.15,0.15, 0.8), rotation(1.2 - 0.3 * i, 0.5, 0));
 
     // Separate the tentacles
-    lgTentLeftMatrices[i] = multiply(lgTentLeftMatrices[i], translation(0.5, i * 0.02, 1));
+    lgTentLeftMatrices[i] = multiply(lgTentLeftMatrices[i], translation(0.5, i * 0.02, 0.5));
+    lgTentLeftMatrices[i] = multiply(noseMatrix, lgTentLeftMatrices[i]);
 
 }
 
@@ -197,9 +199,11 @@ var smTentLeftMatrices = [];
 
 for (var i = 0; i < 2; i++) {
     // Rotate
-    smTentRightMatrices[i] = multiply(rotation(0.5 - i * 1, 0, 0), translation(-0.2, 0, 1));
+    smTentRightMatrices[i] = multiply(rotation(0.2 - i * 0.4, 0, 0), translation(-0.2, 0, 1));
+    smTentRightMatrices[i] = multiply(noseMatrix, smTentRightMatrices[i]);
 
-    smTentLeftMatrices[i] = multiply(rotation(0.5 - i * 1, 0, 0), translation(0.2, 0, 1));
+    smTentLeftMatrices[i] = multiply(rotation(0.2 - i * 0.4, 0, 0), translation(0.2, 0, 1));
+    smTentLeftMatrices[i] = multiply(noseMatrix, smTentLeftMatrices[i]);
 }
 
 
@@ -222,11 +226,11 @@ var lgTentLeft = [];
 var lgTentRight = [];
 for (var i = 0; i < 9; i++) {
     lgTentRight[i] = new THREE.Mesh(lgTentGeometry, normalMaterial);
-    lgTentRight[i].setMatrix(multiply(noseMatrix, lgTentRightMatrices[i]));
+    lgTentRight[i].setMatrix(lgTentRightMatrices[i]);
     scene.add(lgTentRight[i]);
 
     lgTentLeft[i] = new THREE.Mesh(lgTentGeometry, normalMaterial);
-    lgTentLeft[i].setMatrix(multiply(noseMatrix, lgTentLeftMatrices[i]));
+    lgTentLeft[i].setMatrix(lgTentLeftMatrices[i]);
     scene.add(lgTentLeft[i]);
 }
 
@@ -234,11 +238,11 @@ var smTentRight = [];
 var smTentLeft = [];
 for (var i = 0; i < 2; i++) {
     smTentRight[i] = new THREE.Mesh(smTentGeometry, normalMaterial);
-    smTentRight[i].setMatrix(multiply(noseMatrix, smTentRightMatrices[i]));
+    smTentRight[i].setMatrix(smTentRightMatrices[i]);
     scene.add(smTentRight[i]);
 
     smTentLeft[i] = new THREE.Mesh(smTentGeometry, normalMaterial);
-    smTentLeft[i].setMatrix(multiply(noseMatrix, smTentLeftMatrices[i]));
+    smTentLeft[i].setMatrix(smTentLeftMatrices[i]);
     scene.add(smTentLeft[i]);
 }
 
@@ -326,6 +330,7 @@ function updateBody() {
 
         // N is tentacles fan out
         case (key == "N" && animate):
+            fanTents();
             break;
 
         // S is Swim
@@ -463,6 +468,38 @@ function dig() {
             clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0));
             claw[i * 5 + j].setMatrix(clawRotMatrix);
         }
+    }
+}
+
+// N is for tentacle fanning
+function fanTents() {
+    var time = clock.getElapsedTime(); // t seconds passed since the clock started.
+
+    if (time > time_end) {
+        p = p1;
+        animate = false;
+        return;
+    }
+
+    p = (p1 - p0) * ((time - time_start) / time_length) + p0; // current frame
+    for (var i = 0; i < 9; i++) {
+        var rightRotMatrix = lgTentRightMatrices[i];
+        rightRotMatrix = multiply(rightRotMatrix, rotation(0, -p, 0));
+        lgTentRight[i].setMatrix(rightRotMatrix);
+
+        var leftRotMatrix = lgTentLeftMatrices[i];
+        leftRotMatrix = multiply(leftRotMatrix, rotation(0, p, 0));
+        lgTentLeft[i].setMatrix(leftRotMatrix);
+    }
+
+    for (var i = 0; i < 2; i++) {
+        var smTentRightRotMatrix = smTentRightMatrices[i];
+        smTentRightRotMatrix = multiply(smTentRightMatrices[i], rotation(0, -p, 0));
+        smTentRight[i].setMatrix(smTentRightRotMatrix);
+
+        var smTentLeftRotMatrix = smTentLeftMatrices[i];
+        smTentLeftRotMatrix = multiply(smTentLeftRotMatrix, rotation(0, p, 0));
+        smTentLeft[i].setMatrix(smTentLeftRotMatrix);
     }
 }
 
