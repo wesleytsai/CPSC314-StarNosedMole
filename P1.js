@@ -301,6 +301,7 @@ function init_animation(p_start, p_end, t_length) {
 
 function updateBody() {
     var direction;
+    p = get_p_frame();
     switch (true) {
         case ((key == "U" || key == "E") && animate):
             direction = key == "E" ? -1 : 1;
@@ -329,6 +330,7 @@ function updateBody() {
 
         // S is Swim
         case (key == "S" && animate):
+            performSwimmingStarNosedMoleAnimation();
             break;
 
         // D is dig
@@ -355,13 +357,35 @@ function get_p_frame() {
     return p;
 }
 
+function performSwimmingStarNosedMoleAnimation() {
+    var right = -1;
+    var left = 1;
+
+    var rf = 0;
+    var lf = 1;
+    var rr = 2;
+    var lr = 3;
+
+    if (p > 0) {
+        fanTents();
+        moveHead(right);
+        movePaw(lf);
+        movePaw(rr);
+        moveTail(left);
+    } else {
+        p = -p;
+        fanTents();
+        moveHead(left);
+        movePaw(rf);
+        movePaw(lr);
+        moveTail(right);
+    }
+}
 
 function moveHead(direction) {
     // direction: -1 for right, 1 for left
 
     var head_rotation_point_z = 1.5;
-
-    p = get_p_frame();
 
     headRotMatrix = multiply(torsoRotMatrix, headMatrix);
     headRotMatrix = multiply(headRotMatrix, translation(0, 0, -head_rotation_point_z));
@@ -394,8 +418,6 @@ function moveTail(direction) {
 
     var tail_rotation_point_z = 2.0;
 
-    p = get_p_frame();
-
     tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
 
     // Translate to point of rotation and translate back
@@ -410,8 +432,6 @@ function moveTail(direction) {
 
 
 function bodyTilt(direction) {
-    p = get_p_frame();
-
     torsoRotMatrix = new THREE.Matrix4().multiplyMatrices(torsoMatrix, rotation(-direction*p, 0, 0));
     torso.setMatrix(torsoRotMatrix);
 
@@ -449,25 +469,25 @@ function bodyTilt(direction) {
 
 // D is for dig
 function dig() {
-    p = get_p_frame();
-
     for (var i = 0; i < 2; i++) {
-        var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
-        pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
-        pawRotMatrix = multiply(pawRotMatrix, rotation(p, 0, 0));
-        paw[i].setMatrix(pawRotMatrix);
-        for (var j = 0; j < 5; j++) {
-            var clawRotMatrix = multiply(pawRotMatrix, clawMatrices[j]);
-            clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0));
-            claw[i * 5 + j].setMatrix(clawRotMatrix);
-        }
+        movePaw(i);
+    }
+}
+
+function movePaw(i) {
+    var pawRotMatrix = multiply(torsoRotMatrix, pawMatrices[i]);
+    pawRotMatrix = multiply(pawRotMatrix, inverseTorsoMatrix);
+    pawRotMatrix = multiply(pawRotMatrix, rotation(p, 0, 0));
+    paw[i].setMatrix(pawRotMatrix);
+    for (var j = 0; j < 5; j++) {
+        var clawRotMatrix = multiply(pawRotMatrix, clawMatrices[j]);
+        clawRotMatrix = multiply(clawRotMatrix, rotation(p, 0, 0));
+        claw[i * 5 + j].setMatrix(clawRotMatrix);
     }
 }
 
 // N is for tentacle fanning
 function fanTents() {
-    p = get_p_frame();
-
     for (var i = 0; i < 9; i++) {
         var rightRotMatrix = multiply(noseRotMatrix, lgTentRightMatrices[i]);
         rightRotMatrix = multiply(rightRotMatrix, rotation(0, -p, 0));
@@ -496,6 +516,7 @@ var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
 var key;
 var anim_mode = "smooth"; // "jumpcut" or "smooth"
+var swimState = 0;
 keyboard.domElement.addEventListener('keydown', function (event) {
     if (event.repeat)
         return;
@@ -529,7 +550,20 @@ keyboard.domElement.addEventListener('keydown', function (event) {
         (key == "N") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "N")
     }
     else if (keyboard.eventMatches(event, "S")) {
-        (key == "S") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "S")
+        key = "S";
+        switch(swimState) {
+            case 0:
+                init_animation(0, Math.PI / 4, 1);
+                break;
+            case 1:
+                init_animation(p1, -p1, 2*time_length);
+                break;
+            case 2:
+                init_animation(p1, 0, time_length/2);
+                break;
+        }
+        swimState++;
+        swimState = swimState%3;
     }
     else if (keyboard.eventMatches(event, "D")) {
         (key == "D") ? init_animation(p1, p0, time_length) : (init_animation(0, Math.PI / 4, 1), key = "D")
