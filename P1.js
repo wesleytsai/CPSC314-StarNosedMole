@@ -318,6 +318,8 @@ function updateBody() {
 
         // T is tail right, V is tail left
         case ((key == "T" || key == "V") && animate):
+            var direction = key == "V" ? -1 : 1;
+            moveTail(direction);
             break;
 
         // N is tentacles fan out
@@ -358,6 +360,8 @@ function moveHead(direction) {
 
     p = get_p_frame();
 
+    // TODO rotation needs to happen around the correct point
+
     headRotMatrix = multiply(torsoRotMatrix, headMatrix);
     headRotMatrix = multiply(headRotMatrix, inverseTorsoMatrix);
     headRotMatrix = multiply(headRotMatrix, rotation(0, direction*p, 0));
@@ -386,6 +390,13 @@ function moveTail(direction) {
     // direction: -1 for right, 1 for left
 
     p = get_p_frame();
+
+    // TODO rotation needs to happen around the correct point
+
+    tailRotMatrix = multiply(torsoRotMatrix, tailMatrix);
+    tailRotMatrix = multiply(tailRotMatrix, inverseTorsoMatrix);
+    tailRotMatrix = multiply(tailRotMatrix, rotation(0, direction*p, 0));
+    tail.setMatrix(tailRotMatrix);
 }
 
 
