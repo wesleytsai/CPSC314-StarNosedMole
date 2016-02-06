@@ -300,12 +300,11 @@ function init_animation(p_start, p_end, t_length) {
 
 
 function updateBody() {
-    var reverse;
     var direction;
     switch (true) {
         case ((key == "U" || key == "E") && animate):
-            reverse = key == "E" ? true : false;
-            bodyTilt(reverse);
+            direction = key == "E" ? -1 : 1;
+            bodyTilt(direction);
             break;
 
         // TO-DO: IMPLEMENT JUMPCUT/ANIMATION FOR EACH KEY!
